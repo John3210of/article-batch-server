@@ -1,0 +1,19 @@
+version: '3'
+services:
+  django_article_app:
+    image: article:latest
+    container_name: django_article_app
+    ports:
+      - "8000:8000"
+    volumes:
+      - type: bind
+        source: ./
+        target: /app
+    environment:
+      DATABASE_URL: ${DJANGO_DB_URL}
+      SECRET_KEY: ${SECRET_KEY}
+      DEBUG: ${DEBUG}
+    networks:
+      - django-backend-network
+networks:
+  django-backend-network:

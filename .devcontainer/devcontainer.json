@@ -1,0 +1,13 @@
+{
+    "name": "article app Dev Container",
+    "dockerComposeFile": "../docker-compose.yml",
+    "service": "django_article_app",
+    "workspaceFolder": "/app",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-python.python"
+            ]
+        }
+    }
+}
