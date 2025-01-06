@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'article',
     'batch',
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [
