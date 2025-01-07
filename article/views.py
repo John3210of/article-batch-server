@@ -6,4 +6,4 @@ class HealthCheckView(APIView):
         '''
         Health Check for Article app
         '''
-        return Response({"ok"})
+        return Response({"ok ok"})
