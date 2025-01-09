@@ -13,3 +13,8 @@ git clone https://github.com/nine-docs/article-batch-server.git
 docker build -t article-server . 
 docker run --env-file .env -p 8000:8000 article-server 
 ```
+
+#### Swagger
+```
+localhost:8000/article/swagger
+```
