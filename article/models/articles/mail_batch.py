@@ -1,6 +1,6 @@
 from django.db import models
-from ..base_model import AbstractBaseModel
-from ...enums.mail_status import MailStatus
+from article.models.base_model import AbstractBaseModel
+from article.enums.mail_status import MailStatus
 
 class MailBatch(AbstractBaseModel):
     user_email = models.EmailField()

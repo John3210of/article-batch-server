@@ -27,8 +27,6 @@ schema_view = get_schema_view(
         default_version='v1',
         description="API documentation for the Django project",
         terms_of_service="localhost",
-        contact=openapi.Contact(email="john3210of@gmail.com"),
-        license=openapi.License(name="BSD License"),
     ),
     public=True,
     permission_classes=(permissions.AllowAny,),

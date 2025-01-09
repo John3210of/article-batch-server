@@ -1,5 +1,5 @@
 from django.db import models
-from ..base_model import AbstractBaseModel
+from article.models.base_model import AbstractBaseModel
 
 class UserCategory(AbstractBaseModel):
     user_email = models.EmailField()

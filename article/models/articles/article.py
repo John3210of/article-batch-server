@@ -1,5 +1,5 @@
 from django.db import models
-from ..base_model import AbstractBaseModel
+from article.models.base_model import AbstractBaseModel
 
 class Article(AbstractBaseModel):
     title = models.CharField(max_length=50)
