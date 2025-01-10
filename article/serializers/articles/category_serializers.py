@@ -4,4 +4,4 @@ from article.models.articles.category import Category
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ['id','title','version']
+        fields = '__all__'
