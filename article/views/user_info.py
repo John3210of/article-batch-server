@@ -1,61 +1,51 @@
 from rest_framework import viewsets, status
-from rest_framework.decorators import action
 from rest_framework.response import Response
 from article.models.user_info.user_category import UserCategory
 from article.serializers.user_info.user_info_serializers import UserCategorySerializer, UserCategoryCreateSerializer
 from article.serializers.base_serializers import BaseResponseSerializer
 from drf_yasg.utils import swagger_auto_schema
 
-class UserCategoryViewSet(viewsets.ViewSet):
+class UserCategoryViewSet(viewsets.ModelViewSet):
+    #TODO Error handle
     """
     UserCategory 관련 Viewset입니다.
+    기본 메서드를 사용하며 user_email을 lookup_field로 설정합니다.
     """
-    #TODO : ERROR Handle
+    queryset = UserCategory.objects.all()
+    serializer_class = UserCategorySerializer
+    lookup_field = 'user_email'
 
-    @swagger_auto_schema(tags=["User Category API"], responses={200: BaseResponseSerializer})
-    @action(detail=False, methods=['get'], url_path='list/all')
-    def list_all(self, request):
+    @swagger_auto_schema(tags=["User Category API"])
+    def list(self, request, *args, **kwargs):
         """
-        모든 데이터 조회
+        모든 UserCategory를 조회합니다.
         """
-        queryset = UserCategory.objects.all()
-        serializer = UserCategorySerializer(queryset, many=True)
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
         response_data = {
             "data": serializer.data
         }
         return Response(BaseResponseSerializer(response_data).data, status=status.HTTP_200_OK)
 
-    @swagger_auto_schema(
-        tags=["User Category API"],
-        responses={200: BaseResponseSerializer, 400: BaseResponseSerializer, 404: BaseResponseSerializer}
-    )
-    @action(detail=False, methods=['get'], url_path='(?P<user_email>[^/]+)')
-    def get_user_category(self, request, user_email=None):
+    @swagger_auto_schema(tags=["User Category API"])
+    def retrieve(self, request, *args, **kwargs):
         """
-        userEmail을 URL Path Parameter로 받아 특정 유저 데이터 조회
+        특정 UserCategory를 조회합니다.
         """
-        if not user_email:
+        try:
+            instance = self.get_object()
+            serializer = self.get_serializer(instance)
             response_data = {
-                "success": False,
-                "errorCode": "ERR400",
-                "data": {"message": "userEmail is required"}
+                "data": serializer.data
             }
-            return Response(BaseResponseSerializer(response_data).data, status=status.HTTP_400_BAD_REQUEST)
-
-        queryset = UserCategory.objects.filter(user_email=user_email)
-        if not queryset.exists():
+            return Response(BaseResponseSerializer(response_data).data, status=status.HTTP_200_OK)
+        except UserCategory.DoesNotExist:
             response_data = {
                 "success": False,
                 "errorCode": "ERR404",
-                "data": {"message": "No data found for the given userEmail"}
+                "data": {"message": "UserCategory not found"}
             }
             return Response(BaseResponseSerializer(response_data).data, status=status.HTTP_404_NOT_FOUND)
-
-        serializer = UserCategorySerializer(queryset, many=True)
-        response_data = {
-            "data": serializer.data
-        }
-        return Response(BaseResponseSerializer(response_data).data, status=status.HTTP_200_OK)
 
     @swagger_auto_schema(
         request_body=UserCategoryCreateSerializer,
@@ -65,36 +55,11 @@ class UserCategoryViewSet(viewsets.ViewSet):
         },
         tags=["User Category API"]
     )
-    def create(self, request):
+    def create(self, request, *args, **kwargs):
         """
-        userEmail과 categoryId를 받아 새로운 UserCategory 생성
+        새로운 UserCategory를 생성합니다.
         """
-        user_email = request.data.get('userEmail')
-        category_id = request.data.get('categoryId')
-
-        if not user_email:
-            response_data = {
-                "success": False,
-                "errorCode": "ERR400",
-                "data": {"message": "userEmail is required"}
-            }
-            return Response(BaseResponseSerializer(response_data).data, status=status.HTTP_400_BAD_REQUEST)
-
-        if not category_id:
-            response_data = {
-                "success": False,
-                "errorCode": "ERR400",
-                "data": {"message": "categoryId is required"}
-            }
-            return Response(BaseResponseSerializer(response_data).data, status=status.HTTP_400_BAD_REQUEST)
-
-        data = {
-            "user_email": user_email,
-            "category": category_id,
-            "is_activated": True,
-            "sent_mail_count": 0
-        }
-        serializer = UserCategorySerializer(data=data)
+        serializer = UserCategoryCreateSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             response_data = {
@@ -108,7 +73,7 @@ class UserCategoryViewSet(viewsets.ViewSet):
             "data": serializer.errors
         }
         return Response(BaseResponseSerializer(response_data).data, status=status.HTTP_400_BAD_REQUEST)
-    
+
     @swagger_auto_schema(
         request_body=UserCategoryCreateSerializer,
         responses={
@@ -118,22 +83,13 @@ class UserCategoryViewSet(viewsets.ViewSet):
         },
         tags=["User Category API"]
     )
-    @action(detail=False, methods=['patch'], url_path='toggle-activation')
-    def toggle_activation(self, request):
+    def partial_update(self, request, *args, **kwargs):
         """
         userEmail과 categoryId 리스트를 받아 is_activated 상태를 토글합니다.
-        categoryId 중에 존재하지 않는 것도 같이 올경우, 존재하는 것에 대한 처리는 완료합니다.
         """
-        user_email = request.data.get('userEmail')
+        instance = self.get_object()
+        user_email = instance.user_email
         category_ids = request.data.get('categoryIds')
-
-        if not user_email:
-            response_data = {
-                "success": False,
-                "errorCode": "ERR400",
-                "data": {"message": "userEmail is required"}
-            }
-            return Response(BaseResponseSerializer(response_data).data, status=status.HTTP_400_BAD_REQUEST)
 
         if not category_ids or not isinstance(category_ids, list):
             response_data = {
@@ -167,3 +123,25 @@ class UserCategoryViewSet(viewsets.ViewSet):
             }
         }
         return Response(BaseResponseSerializer(response_data).data, status=status.HTTP_200_OK)
+    
+    def update(self, request, *args, **kwargs):
+        """
+        PUT 메서드는 비활성화 합니다.
+        """
+        response_data = {
+            "success": False,
+            "errorCode": "ERR405",
+            "data": {"message": "Method Not Allowed"}
+        }
+        return Response(BaseResponseSerializer(response_data).data, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def destroy(self, request, *args, **kwargs):
+        """
+        DELETE 메서드는 비활성화 합니다.
+        """
+        response_data = {
+            "success": False,
+            "errorCode": "ERR405",
+            "data": {"message": "Method Not Allowed"}
+        }
+        return Response(BaseResponseSerializer(response_data).data, status=status.HTTP_405_METHOD_NOT_ALLOWED)
