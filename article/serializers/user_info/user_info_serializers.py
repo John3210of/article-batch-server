@@ -8,8 +8,10 @@ class UserCategorySerializer(serializers.ModelSerializer):
 
 class UserCategoryCreateSerializer(serializers.ModelSerializer):
     userEmail = serializers.EmailField(source="user_email", required=True)
-    categoryId = serializers.IntegerField(source="category", required=True)
-
+    categoryIds = serializers.ListField(
+        child=serializers.IntegerField(),
+        required=True
+    )
     class Meta:
         model = UserCategory
-        fields = ['userEmail', 'categoryId']
+        fields = ['userEmail', 'categoryIds']
