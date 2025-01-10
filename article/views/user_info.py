@@ -60,15 +60,18 @@ class UserCategoryViewSet(viewsets.ViewSet):
             categories = UserCategory.objects.filter(user_email=user_email)
             if not categories.exists():
                 return handle_error_response({"message": "UserCategory not found"}, "ERR404", status.HTTP_404_NOT_FOUND)
-
-            serializer = UserCategorySerializer(categories, many=True)
+            active_categories = categories.filter(is_activated=True)
+            category_titles = [category.category.title for category in active_categories]
             response_data = {
-                "data": serializer.data
+                "data": {
+                    "userEmail": user_email,
+                    "categoryTitles": category_titles
+                }
             }
             return Response(BaseResponseSerializer(response_data).data, status=status.HTTP_200_OK)
-
         except Exception as e:
             return handle_error_response({"message": str(e)}, "ERR500", status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 
     @swagger_auto_schema(
