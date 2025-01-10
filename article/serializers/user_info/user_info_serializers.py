@@ -22,7 +22,7 @@ class UserCategoryCreateSerializer(serializers.ModelSerializer):
 class UserScheduleSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserSchedule
-        fields = ['id','user_email']
+        fields = ['id','user_email','day_of_week']
 
 class UserScheduleCreateSerializer(serializers.Serializer):
     user_email = serializers.EmailField(required=True)
