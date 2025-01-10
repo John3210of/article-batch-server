@@ -5,7 +5,7 @@ from article.serializers.user_info.user_info_serializers import UserCategorySeri
 from article.serializers.base_serializers import BaseResponseSerializer
 from drf_yasg.utils import swagger_auto_schema
 
-class UserCategoryViewSet(viewsets.ModelViewSet):
+class UserCategoryViewSet(viewsets.ViewSet):
     #TODO Error handle
     """
     UserCategory 관련 Viewset입니다.
@@ -124,6 +124,7 @@ class UserCategoryViewSet(viewsets.ModelViewSet):
         }
         return Response(BaseResponseSerializer(response_data).data, status=status.HTTP_200_OK)
     
+    @swagger_auto_schema(auto_schema=None) 
     def update(self, request, *args, **kwargs):
         """
         PUT 메서드는 비활성화 합니다.
@@ -135,6 +136,7 @@ class UserCategoryViewSet(viewsets.ModelViewSet):
         }
         return Response(BaseResponseSerializer(response_data).data, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
+    @swagger_auto_schema(auto_schema=None) 
     def destroy(self, request, *args, **kwargs):
         """
         DELETE 메서드는 비활성화 합니다.
