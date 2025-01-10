@@ -108,3 +108,62 @@ class UserCategoryViewSet(viewsets.ViewSet):
             "data": serializer.errors
         }
         return Response(BaseResponseSerializer(response_data).data, status=status.HTTP_400_BAD_REQUEST)
+    
+    @swagger_auto_schema(
+        request_body=UserCategoryCreateSerializer,
+        responses={
+            200: BaseResponseSerializer,
+            400: BaseResponseSerializer,
+            404: BaseResponseSerializer
+        },
+        tags=["User Category API"]
+    )
+    @action(detail=False, methods=['patch'], url_path='toggle-activation')
+    def toggle_activation(self, request):
+        """
+        userEmail과 categoryId 리스트를 받아 is_activated 상태를 토글합니다.
+        categoryId 중에 존재하지 않는 것도 같이 올경우, 존재하는 것에 대한 처리는 완료합니다.
+        """
+        user_email = request.data.get('userEmail')
+        category_ids = request.data.get('categoryIds')
+
+        if not user_email:
+            response_data = {
+                "success": False,
+                "errorCode": "ERR400",
+                "data": {"message": "userEmail is required"}
+            }
+            return Response(BaseResponseSerializer(response_data).data, status=status.HTTP_400_BAD_REQUEST)
+
+        if not category_ids or not isinstance(category_ids, list):
+            response_data = {
+                "success": False,
+                "errorCode": "ERR400",
+                "data": {"message": "categoryIds must be a list"}
+            }
+            return Response(BaseResponseSerializer(response_data).data, status=status.HTTP_400_BAD_REQUEST)
+
+        updated_categories = []
+        not_found_categories = []
+
+        for category_id in category_ids:
+            try:
+                user_category = UserCategory.objects.get(user_email=user_email, category=category_id)
+                user_category.is_activated = not user_category.is_activated
+                user_category.save()
+                updated_categories.append({
+                    "categoryId": category_id,
+                    "isActivated": user_category.is_activated
+                })
+            except UserCategory.DoesNotExist:
+                not_found_categories.append(category_id)
+
+        response_data = {
+            "success": True,
+            "errorCode": None,
+            "data": {
+                "updatedCategories": updated_categories,
+                "notFoundCategories": not_found_categories
+            }
+        }
+        return Response(BaseResponseSerializer(response_data).data, status=status.HTTP_200_OK)
