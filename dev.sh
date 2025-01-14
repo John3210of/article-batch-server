@@ -18,7 +18,7 @@ docker rm article-server || true
 
 # 4. 새 컨테이너 실행
 echo "Starting new container..."
-docker run -d --name article-server -p 8000:8000 article-server:latest
+docker run -d --name article-server --env-file .env -p 8000:8000 article-server:latest
 
 # 완료 메시지
 echo "Deployment completed successfully!"
