@@ -1,5 +1,5 @@
 from article_app.models.category._models import Category
-from article_app.serializers.articles.category_serializers import CategorySerializer
+from article_app.serializers.category_serializers import CategorySerializer
 from article_app.services.utils.service_utils import create_response,handle_unexpected_error
 
 class CategoryService:

@@ -14,8 +14,6 @@ class ArticleSerializer(BaseResponseSerializer, serializers.ModelSerializer):
         fields = ['id', 'title', 'contents', 'link', 'category_id', 'category_title']
 
     def create(self, validated_data):
-        print(validated_data)
-        print("123123")
         category_title = validated_data.pop('category_title', None)
         if category_title:
             try:

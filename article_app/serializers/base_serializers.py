@@ -1,5 +1,4 @@
 from rest_framework import serializers
-from inflection import underscore, camelize
 
 class BaseResponseSerializer(serializers.Serializer):
     """
