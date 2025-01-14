@@ -7,6 +7,8 @@ from article.serializers.base_serializers import BaseResponseSerializer
 from article.serializers.user_info.user_info_serializers import (
     UserCategoryCreateSerializer,UserScheduleCreateSerializer,UserCategorySerializer,UserScheduleSerializer
 )
+from inflection import underscore
+from drf_yasg import openapi
 
 def handle_error_response(errors, error_code, status_code):
     '''
@@ -75,7 +77,18 @@ class UserCategoryViewSet(viewsets.ViewSet):
 
 
     @swagger_auto_schema(
-    request_body=UserCategoryCreateSerializer,
+    request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            "userEmail": openapi.Schema(type=openapi.TYPE_STRING, description="User's email address"),
+            "categoryIds": openapi.Schema(
+                type=openapi.TYPE_ARRAY,
+                items=openapi.Schema(type=openapi.TYPE_INTEGER),
+                description="List of category IDs"
+            )
+        },
+        required=["userEmail", "categoryIds"]
+    ),
     responses={
         201: BaseResponseSerializer,
         400: BaseResponseSerializer,
@@ -86,12 +99,13 @@ class UserCategoryViewSet(viewsets.ViewSet):
         """
         새로운 UserCategory를 생성하거나 업데이트합니다.
         """
-        serializer = UserCategoryCreateSerializer(data=request.data)
+        snake_case_data = {underscore(key): value for key, value in request.data.items()}
+        serializer = UserCategoryCreateSerializer(data=snake_case_data)
         if not serializer.is_valid():
             return handle_error_response(serializer.errors, "ERR400", status.HTTP_400_BAD_REQUEST)
 
         user_email = serializer.validated_data['user_email']
-        new_category_ids = serializer.validated_data['categoryIds']
+        new_category_ids = serializer.validated_data['category_ids']
         existing_user_categories = UserCategory.objects.filter(user_email=user_email)
         existing_category_ids = set(existing_user_categories.values_list('category_id', flat=True))
         categories_to_add = set(new_category_ids) - existing_category_ids
@@ -116,7 +130,18 @@ class UserScheduleViewSet(viewsets.ViewSet):
     lookup_field = 'user_email'
     
     @swagger_auto_schema(
-        request_body=UserScheduleCreateSerializer,
+        request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            "userEmail": openapi.Schema(type=openapi.TYPE_STRING, description="User's email address"),
+            "schedules": openapi.Schema(
+                type=openapi.TYPE_ARRAY,
+                items=openapi.Schema(type=openapi.TYPE_STRING),
+                description="List of day of week"
+            )
+        },
+        required=["userEmail", "schedules"]
+    ),
         responses={
             201: BaseResponseSerializer,
             400: BaseResponseSerializer,
@@ -127,10 +152,10 @@ class UserScheduleViewSet(viewsets.ViewSet):
         """
         새로운 User schedule을 생성하거나 기존 데이터를 삭제하고 다시 생성합니다.
         """
-        serializer = UserScheduleCreateSerializer(data=request.data)
+        snake_case_data = {underscore(key): value for key, value in request.data.items()}
+        serializer = UserScheduleCreateSerializer(data=snake_case_data)
         if not serializer.is_valid():
             return handle_error_response(serializer.errors, "ERR400", status.HTTP_400_BAD_REQUEST)
-
         user_email = serializer.validated_data['user_email']
         schedules = serializer.validated_data['schedules']
         UserSchedule.objects.filter(user_email=user_email).delete()
