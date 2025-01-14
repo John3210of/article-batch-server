@@ -1,11 +1,11 @@
 from django.db import models
-from article.models.base_model import AbstractBaseModel
+from article_app.models.base_model import AbstractBaseModel
 
 class Article(AbstractBaseModel):
     title = models.CharField(max_length=50)
     contents = models.TextField()
     link = models.CharField(max_length=100)
-    category = models.ForeignKey('article.Category', on_delete=models.CASCADE, related_name='articles')
+    category = models.ForeignKey('article_app.Category', on_delete=models.CASCADE, related_name='articles')
 
     class Meta:
         db_table = "article"

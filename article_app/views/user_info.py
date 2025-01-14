@@ -1,10 +1,10 @@
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from drf_yasg.utils import swagger_auto_schema
-from article.models.user_info.user_schedule import UserSchedule
-from article.models.user_info.user_category import UserCategory
-from article.serializers.base_serializers import BaseResponseSerializer
-from article.serializers.user_info.user_info_serializers import (
+from article_app.models.user_schedule._models import UserSchedule
+from article_app.models.user_category._models import UserCategory
+from article_app.serializers.base_serializers import BaseResponseSerializer
+from article_app.serializers.user_info.user_info_serializers import (
     UserCategoryCreateSerializer,UserScheduleCreateSerializer,UserCategorySerializer,UserScheduleSerializer
 )
 from inflection import underscore

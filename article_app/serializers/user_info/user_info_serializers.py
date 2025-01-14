@@ -1,7 +1,7 @@
 from rest_framework import serializers
-from article.models.user_info.user_category import UserCategory
-from article.models.user_info.user_schedule import UserSchedule
-from article.enums.day_of_week import DayOfWeek
+from article_app.models.user_category._models import UserCategory
+from article_app.models.user_schedule._models import UserSchedule
+from article_app.enums.day_of_week import DayOfWeek
 class UserCategorySerializer(serializers.ModelSerializer):
     category_id = serializers.IntegerField(source='category.id')
     category_title = serializers.CharField(source='category.title')

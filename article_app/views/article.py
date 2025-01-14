@@ -1,11 +1,11 @@
 from rest_framework import viewsets, status
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.response import Response
-from article.models.articles.category import Category
-from article.models.articles.article import Article
-from article.serializers.articles.category_serializers import CategorySerializer
-from article.serializers.articles.article_serializers import ArticleSerializer
-from article.serializers.base_serializers import BaseResponseSerializer
+from article_app.models.category._models import Category
+from article_app.models.article._models import Article
+from article_app.serializers.articles.category_serializers import CategorySerializer
+from article_app.serializers.articles.article_serializers import ArticleSerializer
+from article_app.serializers.base_serializers import BaseResponseSerializer
 class CategoryViewSet(viewsets.ViewSet):
     """
     Category 관련 ViewSet입니다.

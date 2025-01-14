@@ -1,10 +1,10 @@
 from django.db import models
-from article.models.base_model import AbstractBaseModel
-from article.enums.mail_status import MailStatus
+from article_app.models.base_model import AbstractBaseModel
+from article_app.enums.mail_status import MailStatus
 
 class MailBatch(AbstractBaseModel):
     user_email = models.EmailField()
-    article = models.ForeignKey('article.Article', on_delete=models.CASCADE, related_name='mail_batches')
+    article = models.ForeignKey('article_app.Article', on_delete=models.CASCADE, related_name='mail_batches')
     reservation_date = models.DateField()
     status = models.CharField(
         max_length=100,

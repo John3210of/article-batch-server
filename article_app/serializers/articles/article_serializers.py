@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from article.models.articles.article import Article
-from article.models.articles.category import Category
+from article_app.models.article._models import Article
+from article_app.models.category._models import Category
 
 class BulkArticleSerializer(serializers.ListSerializer):
     """

@@ -1,6 +1,6 @@
 from django.db import models
-from article.models.base_model import AbstractBaseModel
-from article.enums.day_of_week import DayOfWeek
+from article_app.models.base_model import AbstractBaseModel
+from article_app.enums.day_of_week import DayOfWeek
 class UserSchedule(AbstractBaseModel):
     user_email = models.EmailField()
     day_of_week = models.CharField(
