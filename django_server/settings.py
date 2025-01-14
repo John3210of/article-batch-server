@@ -41,7 +41,14 @@ INSTALLED_APPS = [
     'batch_app',
     'drf_yasg',
 ]
-
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': [
+        'article_app.services.utils.renderers.CamelCaseJSONRenderer',
+    ],
+    'DEFAULT_PARSER_CLASSES': [
+        'article_app.services.utils.parsers.CamelCaseJSONParser',
+    ],
+}
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

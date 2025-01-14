@@ -1,8 +1,10 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from article_app.views.user_info import UserCategoryViewSet,UserScheduleViewSet
+from article_app.views.article_viewsets import ArticleViewSet
+from article_app.views.category_viewsets import CategoryViewSet
+from article_app.views.user_category_viewsets import UserCategoryViewSet
+from article_app.views.user_schedule_viewsets import UserScheduleViewSet
 from article_app.views import HealthCheckView
-from article_app.views.article import CategoryViewSet,ArticleViewSet
 
 router = DefaultRouter()
 router.register(r'category', CategoryViewSet, basename='category')
