@@ -22,13 +22,6 @@ class UserCategoryService:
         """
         try:
             categories = UserCategory.objects.filter(user_id=user_id)
-            if not categories.exists():
-                return create_response(
-                    success=False,
-                    error_code="ERR404",
-                    data={"message": "UserCategory not found"},
-                    status_code=404
-                )
             active_categories = categories.filter(is_activated=True)
             category_titles = [category.category.title for category in active_categories]
             response_data = {
