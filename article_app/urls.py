@@ -5,6 +5,7 @@ from article_app.views.category_viewsets import CategoryViewSet
 from article_app.views.user_category_viewsets import UserCategoryViewSet
 from article_app.views.user_schedule_viewsets import UserScheduleViewSet
 from article_app.views import HealthCheckView
+from article_app.views.mail_batch_viewsets import MailBatchListView
 
 router = DefaultRouter()
 router.register(r'category', CategoryViewSet, basename='category')
@@ -14,5 +15,6 @@ router.register(r'user-schedule', UserScheduleViewSet, basename='user-schedule')
 
 urlpatterns = [
     path('health/', HealthCheckView.as_view(), name='health-check'),
+    path('mail-batches/', MailBatchListView.as_view(), name='mail-batches'),
     path('', include(router.urls)),
 ]
