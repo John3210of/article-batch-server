@@ -1,4 +1,4 @@
-from article_app.models.article._models import Article
+from article_app.models import Article
 from article_app.serializers.article_serializers import ArticleSerializer
 from article_app.services.utils.service_utils import create_response,handle_unexpected_error
 
