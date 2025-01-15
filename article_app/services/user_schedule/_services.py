@@ -55,14 +55,6 @@ class UserScheduleService:
         """
         try:
             schedules = UserSchedule.objects.filter(user_id=user_id)
-            if not schedules.exists():
-                return create_response(
-                    success=False,
-                    error_code="ERR404",
-                    data={"message": "UserSchedule not found"},
-                    status_code=404
-                )
-
             schedule_days = [schedule.day_of_week for schedule in schedules]
             response_data = {
                 "user_id": user_id,
