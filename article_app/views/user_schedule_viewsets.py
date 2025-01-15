@@ -2,16 +2,17 @@ from rest_framework import viewsets
 from drf_yasg.utils import swagger_auto_schema
 from article_app.services.user_schedule._services import UserScheduleService
 from drf_yasg import openapi
-from inflection import underscore
 
 class UserScheduleViewSet(viewsets.ViewSet):
     """
     UserSchedule 관련 ViewSet입니다.
     """
+
     @swagger_auto_schema(
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties={
+                "userId": openapi.Schema(type=openapi.TYPE_INTEGER, description="User's ID"),  # user_id 추가
                 "userEmail": openapi.Schema(type=openapi.TYPE_STRING, description="User's email address"),
                 "schedules": openapi.Schema(
                     type=openapi.TYPE_ARRAY,
@@ -19,7 +20,7 @@ class UserScheduleViewSet(viewsets.ViewSet):
                     description="List of day of week"
                 )
             },
-            required=["userEmail", "schedules"]
+            required=["userId", "userEmail", "schedules"]
         ),
         responses={
             201: "User Schedules created or replaced",
@@ -36,27 +37,14 @@ class UserScheduleViewSet(viewsets.ViewSet):
     @swagger_auto_schema(
         tags=["User Schedule API"],
         responses={
-            200: "List of all user schedules",
-            400: "Bad request"
-        }
-    )
-    def list(self, request, *args, **kwargs):
-        """
-        모든 User의 Schedule를 조회합니다.
-        """
-        return UserScheduleService.list_all_schedules()
-
-    @swagger_auto_schema(
-        tags=["User Schedule API"],
-        responses={
-            200: "Schedules for a specific user",
+            200: "Schedules for a specific user by ID",
             400: "Bad request",
             404: "Not found"
         }
     )
-    def retrieve(self, request, user_email=None):
+    def retrieve(self, request, pk=None):
         """
-        특정 User의 schedule을 조회합니다.
-        #TODO : id로 조회기능은 불가능하나, swagger에 노출되는 것 수정할 예정입니다.
+        특정 User의 schedule을 userID로 조회합니다.
         """
-        return UserScheduleService.retrieve_user_schedule_by_email(user_email)
+        user_id = pk
+        return UserScheduleService.retrieve_user_schedule_by_id(user_id)

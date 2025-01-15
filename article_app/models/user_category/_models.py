@@ -2,6 +2,7 @@ from django.db import models
 from article_app.models.base_model import AbstractBaseModel
 
 class UserCategory(AbstractBaseModel):
+    user_id = models.BigIntegerField()
     user_email = models.EmailField()
     category = models.ForeignKey('article_app.Category', on_delete=models.CASCADE, related_name='user_categories')
     is_activated = models.BooleanField(default=True)

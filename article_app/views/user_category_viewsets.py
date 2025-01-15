@@ -28,16 +28,18 @@ class UserCategoryViewSet(viewsets.ViewSet):
             404: "Not Found"
         },
     )
-    def retrieve(self, request, user_email=None):
+    def retrieve(self, request, pk=None):
         """
-        특정 UserCategory를 조회합니다.
+        특정 사용자의 구독중인 UserCategory를 userId를 통해 조회합니다.
         """
-        return UserCategoryService.retrieve_user_categories_by_email(user_email)
+        user_id = pk
+        return UserCategoryService.retrieve_user_categories_by_user_id(user_id)
 
     @swagger_auto_schema(
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties={
+                "userId": openapi.Schema(type=openapi.TYPE_STRING, description="User's ID"),
                 "userEmail": openapi.Schema(type=openapi.TYPE_STRING, description="User's email address"),
                 "categoryIds": openapi.Schema(
                     type=openapi.TYPE_ARRAY,
@@ -45,7 +47,7 @@ class UserCategoryViewSet(viewsets.ViewSet):
                     description="List of category IDs"
                 )
             },
-            required=["userEmail", "categoryIds"]
+            required=["userId","userEmail","categoryIds"]
         ),
         responses={
             201: "User Categories Created/Updated",
@@ -56,6 +58,5 @@ class UserCategoryViewSet(viewsets.ViewSet):
     def create(self, request, *args, **kwargs):
         """
         새로운 UserCategory를 생성하거나 업데이트합니다.
-        #TODO : id로 조회기능은 불가능하나, swagger에 노출되는 것 수정할 예정입니다.
         """
         return UserCategoryService.create_or_update_user_categories(request.data)
