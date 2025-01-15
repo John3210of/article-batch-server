@@ -7,7 +7,7 @@ class UserCategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserCategory
-        fields = ['id', 'user_id', 'user_email', 'category_id', 'category_title', 'is_activated', 'sent_mail_count']
+        fields = ['id', 'user_id', 'user_email', 'category_id', 'category_title', 'is_activated', 'last_mailed_article_id']
 
 class UserCategoryCreateSerializer(serializers.ModelSerializer):
     category_ids = serializers.ListField(
