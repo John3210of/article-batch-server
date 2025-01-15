@@ -3,7 +3,6 @@ from article_app.serializers.user_schedule_serializers import UserScheduleCreate
 from article_app.services.utils.service_utils import create_response, handle_unexpected_error
 
 class UserScheduleService:
-    lookup_field = "user_email"
     @staticmethod
     def create_or_replace_user_schedule(data):
         """
@@ -19,13 +18,18 @@ class UserScheduleService:
                     status_code=400
                 )
             
+            user_id = serializer.validated_data['user_id']
             user_email = serializer.validated_data['user_email']
             schedules = serializer.validated_data['schedules']
-            UserSchedule.objects.filter(user_email=user_email).delete()
+
+            UserSchedule.objects.filter(user_id=user_id).delete()
+
             created_schedules = [
-                UserSchedule.objects.create(user_email=user_email, day_of_week=day)
+                UserSchedule.objects.create(user_id=user_id, user_email=user_email, day_of_week=day)
                 for day in schedules
             ]
+
+            # 생성된 데이터 반환
             response_serializer = UserScheduleSerializer(created_schedules, many=True)
             return create_response(success=True, data=response_serializer.data, status_code=201)
 
@@ -45,20 +49,12 @@ class UserScheduleService:
             return handle_unexpected_error(e, "list_all_schedules")
 
     @staticmethod
-    def retrieve_user_schedule_by_email(user_email):
+    def retrieve_user_schedule_by_id(user_id):
         """
-        특정 User의 Schedule을 조회합니다.
+        특정 user_id의 Schedule을 조회합니다.
         """
         try:
-            if not user_email:
-                return create_response(
-                    success=False,
-                    error_code="ERR400",
-                    data={"message": "UserSchedule ID is required"},
-                    status_code=400
-                )
-            
-            schedules = UserSchedule.objects.filter(user_email=user_email)
+            schedules = UserSchedule.objects.filter(user_id=user_id)
             if not schedules.exists():
                 return create_response(
                     success=False,
@@ -69,10 +65,10 @@ class UserScheduleService:
 
             schedule_days = [schedule.day_of_week for schedule in schedules]
             response_data = {
-                "user_email": user_email,
+                "user_id": user_id,
                 "schedules": schedule_days
             }
             return create_response(success=True, data=response_data, status_code=200)
 
         except Exception as e:
-            return handle_unexpected_error(e, "retrieve_user_schedule_by_email")
+            return handle_unexpected_error(e, "retrieve_user_schedule_by_id")

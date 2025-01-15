@@ -16,12 +16,12 @@ class UserCategoryService:
             return handle_unexpected_error(e, "list_all_user_categories")
 
     @staticmethod
-    def retrieve_user_categories_by_email(user_email):
+    def retrieve_user_categories_by_user_id(user_id:int):
         """
         특정 사용자의 활성화된 UserCategory를 조회합니다.
         """
         try:
-            categories = UserCategory.objects.filter(user_email=user_email)
+            categories = UserCategory.objects.filter(user_id=user_id)
             if not categories.exists():
                 return create_response(
                     success=False,
@@ -32,7 +32,7 @@ class UserCategoryService:
             active_categories = categories.filter(is_activated=True)
             category_titles = [category.category.title for category in active_categories]
             response_data = {
-                "userEmail": user_email,
+                "userId": user_id,
                 "categoryTitles": category_titles
             }
             return create_response(success=True, data=response_data, status_code=200)
@@ -53,7 +53,7 @@ class UserCategoryService:
                     data=serializer.errors,
                     status_code=400
                 )
-
+            user_id = serializer.validated_data['user_id']
             user_email = serializer.validated_data['user_email']
             new_category_ids = serializer.validated_data['category_ids']
             existing_user_categories = UserCategory.objects.filter(user_email=user_email)
@@ -64,7 +64,7 @@ class UserCategoryService:
             UserCategory.objects.filter(user_email=user_email, category_id__in=categories_to_deactivate).update(is_activated=False)
 
             for category_id in categories_to_add:
-                UserCategory.objects.create(user_email=user_email, category_id=category_id, is_activated=True)
+                UserCategory.objects.create(user_id=user_id, user_email=user_email, category_id=category_id, is_activated=True)
 
             updated_user_categories = UserCategory.objects.filter(user_email=user_email, is_activated=True)
             response_serializer = UserCategorySerializer(updated_user_categories, many=True)

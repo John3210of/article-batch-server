@@ -14,7 +14,5 @@ router.register(r'user-schedule', UserScheduleViewSet, basename='user-schedule')
 
 urlpatterns = [
     path('health/', HealthCheckView.as_view(), name='health-check'),
-    path('user-category/<str:user_email>/', UserCategoryViewSet.as_view({'get': 'retrieve'})),
-    path('user-schedule/<str:user_email>/', UserScheduleViewSet.as_view({'get': 'retrieve'})),
     path('', include(router.urls)),
 ]
