@@ -6,7 +6,7 @@ from article_app.enums.day_of_week import DayOfWeek
 from article_app.serializers.mail_batch_serializers import MailBatchSerializer
 import requests
 from article_app.enums.mail_status import MailStatus
-
+from django.conf import settings
 class MailBatchService:
     """
     Service class to handle MailBatch creation tasks.
@@ -70,10 +70,10 @@ class MailBatchService:
     def send_batches_for_next_day():
         """
         메일 전송 API를 호출합니다.
-        API : http://15.165.213.49:3000/api/v1/mail/batch
+        API : f'{settings.MAIL_SERVER_URL}/api/v1/mail/batch'
         """
         try:
-            response = requests.get("http://15.165.213.49:3000/api/v1/mail/health")
+            response = requests.get(f"{settings.MAIL_SERVER_URL}/api/v1/mail/health")
             if response.status_code != 200 or not response.json().get("success"):
                 raise Exception("Mail server health check failed.")
         except Exception as e:
@@ -83,18 +83,18 @@ class MailBatchService:
         mail_batches = MailBatch.objects.filter(reservation_date=today)  # 예약된 모든 메일 가져오기
 
         for mail_batch in mail_batches:
-            body = MailBatchService.get_mail_batch_details(mail_batch)
+            body = MailBatchService.test_get_mail_batch_details(mail_batch)
             
             mail_batch.status = MailStatus.PENDING.value
             mail_batch.save()
             try:
                 api_response = requests.post(
-                    "http://15.165.213.49:3000/api/v1/mail/batch",
+                    f"{settings.MAIL_SERVER_URL}/api/v1/mail/batch",
                     json=body
                 )
                 api_response.raise_for_status()
-                # mail_batch.status = MailStatus.SENT.value
-                # mail_batch.save()
+                mail_batch.status = MailStatus.SENT.value
+                mail_batch.save()
                 print(f"Mail sent for batch: {mail_batch.id}, Response: {api_response.json()}")
             except requests.exceptions.RequestException as e:
                 mail_batch.status = MailStatus.FAILED.value
@@ -109,12 +109,11 @@ class MailBatchService:
         다음날 보낼 메일의 내용을 확인해볼 수 있습니다.
         """
         mails = []
-        today = (date.today() + timedelta(days=1)).isoformat()  # YYYY-MM-DD 포맷
-        mail_batches = MailBatch.objects.filter(reservation_date=today)  # 예약된 모든 메일 가져오기
-
+        today = (date.today() + timedelta(days=1)).isoformat()
+        mail_batches = MailBatch.objects.filter(reservation_date=today)
         # 메일 서버 상태 확인
         try:
-            response = requests.get("http://15.165.213.49:3000/api/v1/mail/health")
+            response = requests.get(f"{settings.MAIL_SERVER_URL}/api/v1/mail/health")
             if response.status_code != 200 or not response.json().get("success"):
                 raise Exception("Mail server health check failed.")
         except Exception as e:
