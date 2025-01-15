@@ -7,7 +7,6 @@ class UserScheduleViewSet(viewsets.ViewSet):
     """
     UserSchedule 관련 ViewSet입니다.
     """
-
     @swagger_auto_schema(
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
@@ -48,3 +47,16 @@ class UserScheduleViewSet(viewsets.ViewSet):
         """
         user_id = pk
         return UserScheduleService.retrieve_user_schedule_by_id(user_id)
+        
+    @swagger_auto_schema(
+            tags=["User Schedule API"],
+            responses={
+                200: "List of User Schedules",
+                400: "Invalid Request"
+            },
+        )
+    def list(self, request, *args, **kwargs):
+        """
+        모든 User Schedule을 조회합니다.
+        """
+        return UserScheduleService.list_all_schedules()
