@@ -28,6 +28,7 @@ environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 SECRET_KEY = env('SECRET_KEY')
 DEBUG = env('DEBUG')
 ALLOWED_HOSTS = ['*']
+MAIL_SERVER_URL = env("MAIL_SERVER_URL")
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
