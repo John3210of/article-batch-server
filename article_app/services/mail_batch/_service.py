@@ -41,7 +41,7 @@ class MailBatchService:
             user_to_categories[user_category.user_id].append(user_category)
             
         with transaction.atomic():
-            for user_id, categories in user_to_categories.items():
+            for _, categories in user_to_categories.items():
                 chosen_category = random.choice(categories)
                 category = chosen_category.category
 

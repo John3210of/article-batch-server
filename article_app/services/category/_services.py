@@ -1,5 +1,5 @@
 from article_app.models import Category
-from article_app.serializers.category_serializers import CategorySerializer
+from article_app.serializers import CategorySerializer
 from article_app.services.utils.service_utils import create_response,handle_unexpected_error
 
 class CategoryService:
@@ -11,7 +11,7 @@ class CategoryService:
         try:
             category = Category.objects.get(pk=category_id)
             serialized_data = CategorySerializer(category).data
-            return create_response(success=True, data=serialized_data, status_code=200)
+            return create_response(data=serialized_data)
         except Category.DoesNotExist:
             return create_response(
                 success=False,
@@ -30,7 +30,7 @@ class CategoryService:
         try:
             categories = Category.objects.all()
             serialized_data = CategorySerializer(categories, many=True).data
-            return create_response(success=True, data=serialized_data, status_code=200)
+            return create_response(data=serialized_data)
         except Exception as e:
             return handle_unexpected_error(e, "get_all_categories")
 
@@ -43,7 +43,7 @@ class CategoryService:
             serializer = CategorySerializer(data=data)
             if serializer.is_valid():
                 serializer.save()
-                return create_response(success=True, data=serializer.data, status_code=201)
+                return create_response(data=serializer.data, status_code=201)
             else:
                 return create_response(
                     success=False,
@@ -65,7 +65,7 @@ class CategoryService:
 
             if serializer.is_valid():
                 serializer.save()
-                return create_response(success=True, data=serializer.data, status_code=200)
+                return create_response(data=serializer.data)
             else:
                 return create_response(
                     success=False,

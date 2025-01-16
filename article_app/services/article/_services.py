@@ -8,7 +8,7 @@ class ArticleService:
         try:
             article = Article.objects.get(pk=article_id)
             serialized_data = ArticleSerializer(article).data
-            return create_response(success=True, data=serialized_data, status_code=200)
+            return create_response(data=serialized_data)
         except Article.DoesNotExist:
             return create_response(
                 success=False,
@@ -24,19 +24,18 @@ class ArticleService:
         try:
             articles = Article.objects.all()
             serialized_data = ArticleSerializer(articles, many=True).data
-            return create_response(success=True, data=serialized_data, status_code=200)
+            return create_response(data=serialized_data)
         except Exception as e:
             return handle_unexpected_error(e, "get_all_articles")
 
     @staticmethod
     def create_articles(data):
         try:
-            is_many = isinstance(data, list)
-            serializer = ArticleSerializer(data=data, many=is_many)
+            serializer = ArticleSerializer(data=data)
 
             if serializer.is_valid():
                 serializer.save()
-                return create_response(success=True, data=serializer.data, status_code=201)
+                return create_response(data=serializer.data)
             else:
                 return create_response(
                     success=False,
@@ -55,7 +54,7 @@ class ArticleService:
 
             if serializer.is_valid():
                 serializer.save()
-                return create_response(success=True, data=serializer.data, status_code=200)
+                return create_response(data=serializer.data)
             else:
                 return create_response(
                     success=False,
@@ -78,7 +77,7 @@ class ArticleService:
         try:
             article = Article.objects.get(pk=article_id)
             article.delete()
-            return create_response(success=True, data={"message": "Article deleted successfully"}, status_code=204)
+            return create_response(data={"message": "Article deleted successfully"}, status_code=204)
         except Article.DoesNotExist:
             return create_response(
                 success=False,

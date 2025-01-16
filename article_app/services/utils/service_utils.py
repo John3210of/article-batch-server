@@ -17,7 +17,7 @@ def handle_unexpected_error(error, method_name):
     )
 
 
-def create_response(success: bool, error_code: str = None, data: dict = None, status_code: int = 200):
+def create_response(success: bool = True, error_code: str = None, data: dict = None, status_code: int = 200):
     """
     공통 응답 형식에 대한 정의입니다.
     정의된 에러에 대한 응답입니다.
@@ -26,7 +26,6 @@ def create_response(success: bool, error_code: str = None, data: dict = None, st
         error_code (str): 에러 코드
         data (dict): 응답 데이터
         status_code (int): HTTP 상태 코드
-        
     Returns:
         Response: Django Rest Framework Response 객체
     """

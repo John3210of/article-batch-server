@@ -47,9 +47,9 @@ class ArticleViewSet(viewsets.ViewSet):
                 "title": openapi.Schema(type=openapi.TYPE_STRING, description="Article title"),
                 "contents": openapi.Schema(type=openapi.TYPE_STRING, description="Article contents"),
                 "link": openapi.Schema(type=openapi.TYPE_STRING, description="Article link"),
-                "categoryTitle": openapi.Schema(type=openapi.TYPE_STRING, description="Category title")
+                "categoryId": openapi.Schema(type=openapi.TYPE_INTEGER, description="Category Id")
             },
-            required=["title", "contents", "link", "categoryTitle"],
+            required=["title", "contents", "link", "categoryId"],
         ),
         tags=["Article API"]
     )

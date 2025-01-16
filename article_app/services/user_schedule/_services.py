@@ -1,15 +1,15 @@
 from article_app.models import UserSchedule
-from article_app.serializers import UserScheduleCreateSerializer, UserScheduleSerializer
+from article_app.serializers import UserScheduleSerializer
 from article_app.services.utils.service_utils import create_response, handle_unexpected_error
 
 class UserScheduleService:
     @staticmethod
     def create_or_replace_user_schedule(data):
         """
-        새로운 UserSchedule을 생성하거나 기존 데이터를 삭제 후 다시 생성합니다.
+        새로운 UserSchedule을 생성하거나 기존 데이터를 대체합니다.
         """
         try:
-            serializer = UserScheduleCreateSerializer(data=data)
+            serializer = UserScheduleSerializer(data=data)
             if not serializer.is_valid():
                 return create_response(
                     success=False,
@@ -30,7 +30,7 @@ class UserScheduleService:
             ]
 
             response_serializer = UserScheduleSerializer(created_schedules, many=True)
-            return create_response(success=True, data=response_serializer.data, status_code=201)
+            return create_response(data=response_serializer.data, status_code=201)
 
         except Exception as e:
             return handle_unexpected_error(e, "create_or_replace_user_schedule")
@@ -43,7 +43,7 @@ class UserScheduleService:
         try:
             queryset = UserSchedule.objects.all()
             serializer = UserScheduleSerializer(queryset, many=True)
-            return create_response(success=True, data=serializer.data, status_code=200)
+            return create_response(data=serializer.data)
         except Exception as e:
             return handle_unexpected_error(e, "list_all_schedules")
 
@@ -59,7 +59,7 @@ class UserScheduleService:
                 "user_id": user_id,
                 "schedules": schedule_days
             }
-            return create_response(success=True, data=response_data, status_code=200)
+            return create_response(data=response_data)
 
         except Exception as e:
             return handle_unexpected_error(e, "retrieve_user_schedule_by_id")
