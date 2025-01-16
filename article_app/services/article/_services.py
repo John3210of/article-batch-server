@@ -32,7 +32,6 @@ class ArticleService:
     def create_articles(data):
         try:
             serializer = ArticleSerializer(data=data)
-
             if serializer.is_valid():
                 serializer.save()
                 return create_response(data=serializer.data)

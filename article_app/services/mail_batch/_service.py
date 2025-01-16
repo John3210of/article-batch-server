@@ -10,6 +10,7 @@ from django.conf import settings
 class MailBatchService:
     """
     Service class to handle MailBatch creation tasks.
+    #TODO 메일 발송 실패시, 재발송에 관한 비즈니스 로직 정의에 따른 개발이 추가되어야 합니다.
     """
 
     @staticmethod
@@ -39,7 +40,8 @@ class MailBatchService:
             if user_category.user_id not in user_to_categories:
                 user_to_categories[user_category.user_id] = []
             user_to_categories[user_category.user_id].append(user_category)
-            
+
+        mail_batches = []
         with transaction.atomic():
             for _, categories in user_to_categories.items():
                 chosen_category = random.choice(categories)
@@ -56,15 +58,16 @@ class MailBatchService:
                     chosen_category.save()
                     continue
 
-                MailBatch.objects.create(
+                mail_batches.append(MailBatch(
                     user_email=chosen_category.user_email,
                     article=next_article,
                     reservation_date=next_day,
                     status="CREATED",
-                )
+                ))
 
                 chosen_category.last_mailed_article_id = next_article.pk
                 chosen_category.save()
+            MailBatch.objects.bulk_create(mail_batches)
                 
     @staticmethod
     def send_batches_for_next_day():

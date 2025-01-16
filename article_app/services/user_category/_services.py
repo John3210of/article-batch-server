@@ -36,6 +36,7 @@ class UserCategoryService:
     def create_or_update_user_categories(data):
         """
         새로운 UserCategory를 생성하거나 업데이트합니다.
+        구독 취소 > 재구독 의 경우 기존 정보를 가지고 메일 발송해야하므로 soft delete 형태로 구현되어있습니다.
         """
         try:
             serializer = UserCategoryCreateSerializer(data=data)
@@ -62,9 +63,11 @@ class UserCategoryService:
             UserCategory.objects.filter(user_email=user_email,category_id__in=categories_to_deactivate).update(is_activated=False)
             categories_to_reactivate.update(is_activated=True)
 
-            for category_id in categories_to_add:
-                UserCategory.objects.create(user_id=user_id, user_email=user_email, category_id=category_id, is_activated=True)
-
+            if categories_to_add:
+                user_categories_to_create = [UserCategory(user_id=user_id, user_email=user_email, category_id=category_id, is_activated=True)
+                for category_id in categories_to_add
+            ]
+                UserCategory.objects.bulk_create(user_categories_to_create)
             updated_user_categories = UserCategory.objects.filter(user_email=user_email, is_activated=True)
             response_serializer = UserCategorySerializer(updated_user_categories, many=True)
 

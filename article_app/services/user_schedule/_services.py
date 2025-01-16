@@ -24,12 +24,12 @@ class UserScheduleService:
 
             UserSchedule.objects.filter(user_id=user_id).delete()
 
-            created_schedules = [
-                UserSchedule.objects.create(user_id=user_id, user_email=user_email, day_of_week=day)
+            schedule_objects = [
+                UserSchedule(user_id=user_id, user_email=user_email, day_of_week=day)
                 for day in schedules
             ]
-
-            response_serializer = UserScheduleSerializer(created_schedules, many=True)
+            UserSchedule.objects.bulk_create(schedule_objects)
+            response_serializer = UserScheduleSerializer(schedule_objects, many=True)
             return create_response(data=response_serializer.data, status_code=201)
 
         except Exception as e:

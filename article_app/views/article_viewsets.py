@@ -38,6 +38,9 @@ class ArticleViewSet(viewsets.ViewSet):
         tags=["Article API"]
     )
     def create(self, request):
+        '''
+        article을 생성하는 API입니다.
+        '''
         return ArticleService.create_articles(request.data)
 
     @swagger_auto_schema(
