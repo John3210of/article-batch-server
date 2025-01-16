@@ -1,5 +1,5 @@
-from article_app.models.user_schedule._models import UserSchedule
-from article_app.serializers.user_schedule_serializers import UserScheduleCreateSerializer, UserScheduleSerializer
+from article_app.models import UserSchedule
+from article_app.serializers import UserScheduleCreateSerializer, UserScheduleSerializer
 from article_app.services.utils.service_utils import create_response, handle_unexpected_error
 
 class UserScheduleService:
@@ -29,7 +29,6 @@ class UserScheduleService:
                 for day in schedules
             ]
 
-            # 생성된 데이터 반환
             response_serializer = UserScheduleSerializer(created_schedules, many=True)
             return create_response(success=True, data=response_serializer.data, status_code=201)
 

@@ -1,13 +1,12 @@
 from rest_framework import viewsets
 from drf_yasg.utils import swagger_auto_schema
-from article_app.services.article._services import ArticleService
+from article_app.services import ArticleService
 from drf_yasg import openapi
 
 class ArticleViewSet(viewsets.ViewSet):
     """
     Article 관련 ViewSet입니다.
     """
-    #TODO swagger 일괄 처리
     
     @swagger_auto_schema(
         tags=["Article API"]

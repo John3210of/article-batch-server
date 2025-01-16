@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from article_app.models.user_schedule._models import UserSchedule
-from article_app.enums.day_of_week import DayOfWeek
+from article_app.models import UserSchedule
+from article_app.enums import DayOfWeek
 
 class UserScheduleSerializer(serializers.ModelSerializer):
     class Meta:

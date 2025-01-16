@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from article_app.models.user_category._models import UserCategory
+from article_app.models import UserCategory
 
 class UserCategorySerializer(serializers.ModelSerializer):
     category_id = serializers.IntegerField(source='category.id')

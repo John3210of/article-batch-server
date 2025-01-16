@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from drf_yasg.utils import swagger_auto_schema
-from article_app.services.mail_batch._service import MailBatchService
+from article_app.services import MailBatchService
 
 class MailBatchListView(APIView):
     """

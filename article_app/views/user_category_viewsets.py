@@ -1,6 +1,6 @@
 from rest_framework import viewsets
 from drf_yasg.utils import swagger_auto_schema
-from article_app.services.user_category._services import UserCategoryService
+from article_app.services import UserCategoryService
 from drf_yasg import openapi
 
 class UserCategoryViewSet(viewsets.ViewSet):
