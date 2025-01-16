@@ -18,7 +18,7 @@ class UserCategoryService(BaseService):
         특정 사용자의 활성화된 UserCategory를 조회합니다.
         """
         active_categories = UserCategory.objects.filter(user_id=user_id, is_activated=True)
-        category_titles = [category.category.title for category in active_categories]
+        category_titles = [active_category.category.title for active_category in active_categories]
         response_data = {
             "userId": user_id,
             "categoryTitles": category_titles
