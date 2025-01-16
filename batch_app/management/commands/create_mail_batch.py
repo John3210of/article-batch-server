@@ -1,6 +1,6 @@
 import logging
 from django.core.management.base import BaseCommand
-from article_app.services.mail_batch._service import MailBatchService
+from article_app.services import MailBatchService
 
 logging.basicConfig(
     level=logging.INFO,

@@ -44,10 +44,10 @@ INSTALLED_APPS = [
 ]
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
-        'article_app.services.utils.renderers.CamelCaseJSONRenderer',
+        'article_app.utils.renderers.CamelCaseJSONRenderer',
     ],
     'DEFAULT_PARSER_CLASSES': [
-        'article_app.services.utils.parsers.CamelCaseJSONParser',
+        'article_app.utils.parsers.CamelCaseJSONParser',
     ],
 }
 MIDDLEWARE = [

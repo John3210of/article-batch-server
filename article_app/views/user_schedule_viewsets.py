@@ -1,6 +1,6 @@
 from rest_framework import viewsets
 from drf_yasg.utils import swagger_auto_schema
-from article_app.services.user_schedule._services import UserScheduleService
+from article_app.services import UserScheduleService
 from drf_yasg import openapi
 
 class UserScheduleViewSet(viewsets.ViewSet):

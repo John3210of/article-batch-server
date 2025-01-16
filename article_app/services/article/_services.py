@@ -1,90 +1,44 @@
 from article_app.models import Article
 from article_app.serializers.article_serializers import ArticleSerializer
-from article_app.services.utils.service_utils import create_response,handle_unexpected_error
+from article_app.services.utils.service_utils import create_response, exception_handler
+from article_app.services.base._service import BaseService
 
-class ArticleService:
+class ArticleService(BaseService):
+
     @staticmethod
     def get_article_by_id(article_id):
-        try:
-            article = Article.objects.get(pk=article_id)
-            serialized_data = ArticleSerializer(article).data
-            return create_response(success=True, data=serialized_data, status_code=200)
-        except Article.DoesNotExist:
-            return create_response(
-                success=False,
-                error_code="ERR404",
-                data={"message": "Article not found"},
-                status_code=404
-            )
-        except Exception as e:
-            return handle_unexpected_error(e, "get_article_by_id")
+        """
+        단일 Article 조회
+        """
+        return BaseService.get_object_by_id(Article, ArticleSerializer, article_id)
 
     @staticmethod
     def get_all_articles():
-        try:
-            articles = Article.objects.all()
-            serialized_data = ArticleSerializer(articles, many=True).data
-            return create_response(success=True, data=serialized_data, status_code=200)
-        except Exception as e:
-            return handle_unexpected_error(e, "get_all_articles")
+        """
+        모든 Articles 조회
+        """
+        return BaseService.get_all_objects(Article, ArticleSerializer)
 
     @staticmethod
     def create_articles(data):
-        try:
-            is_many = isinstance(data, list)
-            serializer = ArticleSerializer(data=data, many=is_many)
-
-            if serializer.is_valid():
-                serializer.save()
-                return create_response(success=True, data=serializer.data, status_code=201)
-            else:
-                return create_response(
-                    success=False,
-                    error_code="ERR400",
-                    data=serializer.errors,
-                    status_code=400
-                )
-        except Exception as e:
-            return handle_unexpected_error(e, "create_articles")
+        """
+        새 Article 생성
+        """
+        return BaseService.create_object(ArticleSerializer, data)
 
     @staticmethod
     def update_article(article_id, data):
-        try:
-            article = Article.objects.get(pk=article_id)
-            serializer = ArticleSerializer(article, data=data, partial=True)
-
-            if serializer.is_valid():
-                serializer.save()
-                return create_response(success=True, data=serializer.data, status_code=200)
-            else:
-                return create_response(
-                    success=False,
-                    error_code="ERR400",
-                    data=serializer.errors,
-                    status_code=400
-                )
-        except Article.DoesNotExist:
-            return create_response(
-                success=False,
-                error_code="ERR404",
-                data={"message": "Article not found"},
-                status_code=404
-            )
-        except Exception as e:
-            return handle_unexpected_error(e, "update_article")
+        """
+        기존 Article 업데이트
+        """
+        return BaseService.update_object(Article, ArticleSerializer, article_id, data)
 
     @staticmethod
+    @exception_handler(method_name="delete_article")
     def delete_article(article_id):
-        try:
-            article = Article.objects.get(pk=article_id)
-            article.delete()
-            return create_response(success=True, data={"message": "Article deleted successfully"}, status_code=204)
-        except Article.DoesNotExist:
-            return create_response(
-                success=False,
-                error_code="ERR404",
-                data={"message": "Article not found"},
-                status_code=404
-            )
-        except Exception as e:
-            return handle_unexpected_error(e, "delete_article")
+        """
+        특정 Article 삭제
+        """
+        article = Article.objects.get(pk=article_id)
+        article.delete()
+        return create_response(data={"message": "Article deleted successfully"}, status_code=204)

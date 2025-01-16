@@ -1,9 +1,8 @@
 from rest_framework import serializers
-from article_app.models.article._models import Article
-from article_app.models.category._models import Category
-from article_app.serializers.base_serializers import BaseResponseSerializer
+from article_app.models import Article
+from article_app.models import Category
 
-class ArticleSerializer(BaseResponseSerializer, serializers.ModelSerializer):
+class ArticleSerializer(serializers.ModelSerializer):
     """
     Article 모델에 대한 Serializer입니다.
     """

@@ -1,5 +1,7 @@
 from rest_framework.response import Response
 import logging
+from functools import wraps
+from rest_framework.exceptions import ValidationError
 
 logger = logging.getLogger(__name__)
 
@@ -16,8 +18,7 @@ def handle_unexpected_error(error, method_name):
         status_code=500
     )
 
-
-def create_response(success: bool, error_code: str = None, data: dict = None, status_code: int = 200):
+def create_response(success: bool = True, error_code: str = None, data: dict = None, status_code: int = 200):
     """
     공통 응답 형식에 대한 정의입니다.
     정의된 에러에 대한 응답입니다.
@@ -26,7 +27,6 @@ def create_response(success: bool, error_code: str = None, data: dict = None, st
         error_code (str): 에러 코드
         data (dict): 응답 데이터
         status_code (int): HTTP 상태 코드
-        
     Returns:
         Response: Django Rest Framework Response 객체
     """
@@ -36,3 +36,37 @@ def create_response(success: bool, error_code: str = None, data: dict = None, st
         "data": data
     }
     return Response(response_data, status=status_code)
+
+def exception_handler(method_name=""):
+    """
+    공통 예외 처리를 담당하는 데코레이터.
+    """
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            try:
+                return func(*args, **kwargs)
+            except args[0].DoesNotExist:
+                return create_response(
+                    success=False,
+                    error_code="ERR404",
+                    data={"message": f"{args[0].__name__} not found"},
+                    status_code=404
+                )
+            except ValidationError as e:
+                return create_response(
+                    success=False,
+                    error_code="ERR400",
+                    data=e.detail,
+                    status_code=400
+                )
+            except Exception as e:
+                logger.exception(f"Unexpected error in {method_name}: {e}")
+                return create_response(
+                    success=False,
+                    error_code="ERR500",
+                    data={"message": "Unknown error occurred"},
+                    status_code=500
+                )
+        return wrapper
+    return decorator

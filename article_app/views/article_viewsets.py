@@ -1,13 +1,12 @@
 from rest_framework import viewsets
 from drf_yasg.utils import swagger_auto_schema
-from article_app.services.article._services import ArticleService
+from article_app.services import ArticleService
 from drf_yasg import openapi
 
 class ArticleViewSet(viewsets.ViewSet):
     """
     Article 관련 ViewSet입니다.
     """
-    #TODO swagger 일괄 처리
     
     @swagger_auto_schema(
         tags=["Article API"]
@@ -39,6 +38,9 @@ class ArticleViewSet(viewsets.ViewSet):
         tags=["Article API"]
     )
     def create(self, request):
+        '''
+        article을 생성하는 API입니다.
+        '''
         return ArticleService.create_articles(request.data)
 
     @swagger_auto_schema(
@@ -48,9 +50,9 @@ class ArticleViewSet(viewsets.ViewSet):
                 "title": openapi.Schema(type=openapi.TYPE_STRING, description="Article title"),
                 "contents": openapi.Schema(type=openapi.TYPE_STRING, description="Article contents"),
                 "link": openapi.Schema(type=openapi.TYPE_STRING, description="Article link"),
-                "categoryTitle": openapi.Schema(type=openapi.TYPE_STRING, description="Category title")
+                "categoryId": openapi.Schema(type=openapi.TYPE_INTEGER, description="Category Id")
             },
-            required=["title", "contents", "link", "categoryTitle"],
+            required=["title", "contents", "link", "categoryId"],
         ),
         tags=["Article API"]
     )
