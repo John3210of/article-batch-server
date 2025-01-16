@@ -26,7 +26,7 @@ class UserCategoryService(BaseService):
         return create_response(data=response_data)
 
     @staticmethod
-    @exception_handler(method_name="retrieve_user_categories_by_user_id")
+    @exception_handler(method_name="create_or_update_user_categories")
     def create_or_update_user_categories(data):
         """
         새로운 UserCategory를 생성하거나 업데이트합니다.
