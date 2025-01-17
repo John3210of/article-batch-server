@@ -1,6 +1,8 @@
 from django.db import models
 from article_app.models.base_model import AbstractBaseModel
 from article_app.enums.day_of_week import DayOfWeek
+from ._manager import UserScheduleManager
+
 class UserSchedule(AbstractBaseModel):
     user_id = models.BigIntegerField()
     user_email = models.EmailField()
@@ -8,6 +10,8 @@ class UserSchedule(AbstractBaseModel):
         max_length=3,
         choices=DayOfWeek.choices(),
     )
+
+    objects = UserScheduleManager()
 
     class Meta:
         db_table = "user_schedule"

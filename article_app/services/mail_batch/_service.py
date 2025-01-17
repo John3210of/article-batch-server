@@ -120,7 +120,7 @@ class MailBatchService:
         mails = []
         today = (date.today() + timedelta(days=1)).isoformat()
         mail_batches = MailBatch.objects.filter(reservation_date=today)
-        # 메일 서버 상태 확인
+        
         try:
             response = requests.get(f"{settings.MAIL_SERVER_URL}/api/v1/mail/health")
             if response.status_code != 200 or not response.json().get("success"):

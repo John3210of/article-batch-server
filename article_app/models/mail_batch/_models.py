@@ -1,7 +1,7 @@
 from django.db import models
 from article_app.models.base_model import AbstractBaseModel
 from article_app.enums.mail_status import MailStatus
-
+from ._manager import MailBatchManager
 class MailBatch(AbstractBaseModel):
     user_email = models.EmailField()
     article = models.ForeignKey('article_app.Article', on_delete=models.CASCADE, related_name='mail_batches')
@@ -11,7 +11,9 @@ class MailBatch(AbstractBaseModel):
         choices=MailStatus.choices(),
         default=MailStatus.CREATED.value,
     )
-
+    
+    objects = MailBatchManager()
+    
     class Meta:
         db_table = "mail_batch"
 

@@ -39,7 +39,7 @@ class UserCategoryViewSet(viewsets.ViewSet):
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties={
-                "userId": openapi.Schema(type=openapi.TYPE_STRING, description="User's ID"),
+                "userId": openapi.Schema(type=openapi.TYPE_INTEGER, description="User's ID"),
                 "userEmail": openapi.Schema(type=openapi.TYPE_STRING, description="User's email address"),
                 "categoryIds": openapi.Schema(
                     type=openapi.TYPE_ARRAY,
