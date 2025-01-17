@@ -2,6 +2,7 @@ from rest_framework.response import Response
 import logging
 from functools import wraps
 from rest_framework.exceptions import ValidationError
+from django.core.exceptions import ObjectDoesNotExist
 
 logger = logging.getLogger(__name__)
 
@@ -37,6 +38,7 @@ def create_response(success: bool = True, error_code: str = None, data: dict = N
     }
     return Response(response_data, status=status_code)
 
+
 def exception_handler(method_name=""):
     """
     공통 예외 처리를 담당하는 데코레이터.
@@ -46,27 +48,70 @@ def exception_handler(method_name=""):
         def wrapper(*args, **kwargs):
             try:
                 return func(*args, **kwargs)
-            except args[0].DoesNotExist:
-                return create_response(
-                    success=False,
-                    error_code="ERR404",
-                    data={"message": f"{args[0].__name__} not found"},
-                    status_code=404
-                )
             except ValidationError as e:
                 return create_response(
                     success=False,
                     error_code="ERR400",
                     data=e.detail,
-                    status_code=400
+                    status_code=400,
+                )
+            except ObjectDoesNotExist as e:
+                return create_response(
+                    success=False,
+                    error_code="ERR404",
+                    data={"message": str(e)},
+                    status_code=404,
                 )
             except Exception as e:
-                logger.exception(f"Unexpected error in {method_name}: {e}")
+                logger.exception(
+                    f"Unexpected error in service '{method_name}': {e}\n"
+                    f"Args: {args}\n"
+                    f"Kwargs: {kwargs}"
+                )
                 return create_response(
                     success=False,
                     error_code="ERR500",
-                    data={"message": "Unknown error occurred"},
-                    status_code=500
+                    data={
+                        "message": "Unknown error occurred",
+                        "service": method_name,
+                        "error": str(e),
+                    },
+                    status_code=500,
                 )
         return wrapper
     return decorator
+
+
+# def exception_handler(method_name=""):
+#     """
+#     공통 예외 처리를 담당하는 데코레이터.
+#     """
+#     def decorator(func):
+#         @wraps(func)
+#         def wrapper(*args, **kwargs):
+#             try:
+#                 return func(*args, **kwargs)
+#             except args[0].DoesNotExist:
+#                 return create_response(
+#                     success=False,
+#                     error_code="ERR404",
+#                     data={"message": f"{args[0].__name__} not found"},
+#                     status_code=404
+#                 )
+#             except ValidationError as e:
+#                 return create_response(
+#                     success=False,
+#                     error_code="ERR400",
+#                     data=e.detail,
+#                     status_code=400
+#                 )
+#             except Exception as e:
+#                 logger.exception(f"Unexpected error in {method_name}: {e}")
+#                 return create_response(
+#                     success=False,
+#                     error_code="ERR500",
+#                     data={"message": "Unknown error occurred"},
+#                     status_code=500
+#                 )
+#         return wrapper
+#     return decorator
