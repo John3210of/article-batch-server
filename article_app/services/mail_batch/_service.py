@@ -1,5 +1,6 @@
 from datetime import date, timedelta
 import random
+import logging
 from django.db import transaction
 from article_app.models import UserCategory, Article, MailBatch, UserSchedule
 from article_app.enums.day_of_week import DayOfWeek
@@ -7,6 +8,9 @@ from article_app.serializers.mail_batch_serializers import MailBatchSerializer
 import requests
 from article_app.enums.mail_status import MailStatus
 from django.conf import settings
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
 class MailBatchService:
     """
     Service class to handle MailBatch creation tasks.
@@ -80,13 +84,14 @@ class MailBatchService:
             if response.status_code != 200 or not response.json().get("success"):
                 raise Exception("Mail server health check failed.")
         except Exception as e:
+            logging.error(f"Mail server error: {e}")
             raise RuntimeError(f"Mail server error: {e}")
 
         today = (date.today() + timedelta(days=1)).isoformat()  # YYYY-MM-DD 포맷
-        mail_batches = MailBatch.objects.filter(reservation_date=today)  # 예약된 모든 메일 가져오기
+        mail_batches = MailBatch.objects.filter(reservation_date=today)
 
         for mail_batch in mail_batches:
-            body = MailBatchService.test_get_mail_batch_details(mail_batch)
+            body = MailBatchService.get_mail_batch_details(mail_batch)
             
             mail_batch.status = MailStatus.PENDING.value
             mail_batch.save()
@@ -98,12 +103,13 @@ class MailBatchService:
                 api_response.raise_for_status()
                 mail_batch.status = MailStatus.SENT.value
                 mail_batch.save()
-                print(f"Mail sent for batch: {mail_batch.id}, Response: {api_response.json()}")
+                logging.info(f"Mail sent for batch: {mail_batch.id}, Response: {api_response.json()}")
             except requests.exceptions.RequestException as e:
                 mail_batch.status = MailStatus.FAILED.value
                 mail_batch.save()
-                print(f"Failed to send mail for batch {mail_batch.id}: {e}")
+                logging.error(f"Failed to send mail for batch {mail_batch.id}: {e}")
 
+        logging.info("Mail batch sending finished.")
         return "finished"
     
     @staticmethod
@@ -114,18 +120,19 @@ class MailBatchService:
         mails = []
         today = (date.today() + timedelta(days=1)).isoformat()
         mail_batches = MailBatch.objects.filter(reservation_date=today)
-        # 메일 서버 상태 확인
+        
         try:
             response = requests.get(f"{settings.MAIL_SERVER_URL}/api/v1/mail/health")
             if response.status_code != 200 or not response.json().get("success"):
                 raise Exception("Mail server health check failed.")
         except Exception as e:
+            logging.error(f"Mail server error: {e}")
             raise RuntimeError(f"Mail server error: {e}")
 
         for mail_batch in mail_batches:
             mails.append(MailBatchService.get_mail_batch_details(mail_batch))
 
-        print(mails)
+        logging.info(f"{len(mails)} mails prepared for sending.")
         return f"{len(mails)} mails prepared for sending."
 
     @staticmethod

@@ -13,6 +13,7 @@ class UserScheduleService(BaseService):
         return BaseService.get_all_objects(UserSchedule, UserScheduleSerializer)
 
     @staticmethod
+    @exception_handler(method_name="retrieve_user_schedule_by_id")
     def retrieve_user_schedule_by_id(user_id):
         """
         특정 user_id의 Schedule을 조회합니다.

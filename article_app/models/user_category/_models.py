@@ -1,13 +1,14 @@
 from django.db import models
 from article_app.models.base_model import AbstractBaseModel
-
+from ._manager import UserCategoryManager
 class UserCategory(AbstractBaseModel):
     user_id = models.BigIntegerField()
     user_email = models.EmailField()
     category = models.ForeignKey('article_app.Category', on_delete=models.CASCADE, related_name='user_categories')
     is_activated = models.BooleanField(default=True)
     last_mailed_article_id = models.BigIntegerField(default=0)
-
+    
+    objects = UserCategoryManager()
     class Meta:
         db_table = "user_category"
 

@@ -18,11 +18,21 @@ class ArticleService(BaseService):
         모든 Articles 조회
         """
         return BaseService.get_all_objects(Article, ArticleSerializer)
+    
+    @staticmethod
+    def create_articles(data_list):
+        """
+        여러 새 Article 생성
+        """
+        if not isinstance(data_list, list):
+            raise ValueError("Input data must be a list of articles.")
+        return BaseService.bulk_create_objects(ArticleSerializer, data_list)
 
     @staticmethod
-    def create_articles(data):
+    def create_article(data):
         """
         새 Article 생성
+        #NOTE 지금은 사용하지 않습니다.
         """
         return BaseService.create_object(ArticleSerializer, data)
 

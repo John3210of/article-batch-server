@@ -23,23 +23,26 @@ class ArticleViewSet(viewsets.ViewSet):
         모든 article을 조회하는 API입니다.
         '''
         return ArticleService.get_all_articles()
-
+    
     @swagger_auto_schema(
         request_body=openapi.Schema(
-            type=openapi.TYPE_OBJECT,
-            properties={
-                "title": openapi.Schema(type=openapi.TYPE_STRING, description="Article title"),
-                "contents": openapi.Schema(type=openapi.TYPE_STRING, description="Article contents"),
-                "link": openapi.Schema(type=openapi.TYPE_STRING, description="Article link"),
-                "categoryTitle": openapi.Schema(type=openapi.TYPE_STRING, description="Category title")
-            },
-            required=["title", "contents", "link", "categoryTitle"],
+            type=openapi.TYPE_ARRAY,
+            items=openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    "title": openapi.Schema(type=openapi.TYPE_STRING, description="Article title"),
+                    "contents": openapi.Schema(type=openapi.TYPE_STRING, description="Article contents"),
+                    "link": openapi.Schema(type=openapi.TYPE_STRING, description="Article link"),
+                    "categoryTitle": openapi.Schema(type=openapi.TYPE_STRING, description="Category title"),
+                },
+                required=["title", "contents", "link", "categoryTitle"],
+            ),
         ),
         tags=["Article API"]
     )
     def create(self, request):
         '''
-        article을 생성하는 API입니다.
+        여러 article을 생성하는 API입니다.
         '''
         return ArticleService.create_articles(request.data)
 

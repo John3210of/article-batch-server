@@ -1,4 +1,5 @@
 from article_app.services.utils.service_utils import create_response, exception_handler
+from django.db import transaction
 
 class BaseService:
     @staticmethod
@@ -43,3 +44,27 @@ class BaseService:
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return create_response(data=serializer.data)
+
+    @staticmethod
+    @exception_handler(method_name="bulk_create_objects")
+    def bulk_create_objects(serializer_class, data_list):
+        """
+        여러 객체 생성 (bulk_create)
+        """
+        validated_objects = []
+        for data in data_list:
+            serializer = serializer_class(data=data)
+            serializer.is_valid(raise_exception=True)
+            validated_objects.append(serializer)
+        
+        objects_to_create = [
+            serializer.Meta.model(**serializer.validated_data) for serializer in validated_objects
+        ]
+        with transaction.atomic():
+            serializer_class.Meta.model.objects.bulk_create(objects_to_create)
+
+        return create_response(
+            data=[serializer.data for serializer in validated_objects],
+            status_code=201,
+        )
+
