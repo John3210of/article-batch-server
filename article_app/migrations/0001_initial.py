@@ -48,7 +48,7 @@ class Migration(migrations.Migration):
                 ('title', models.CharField(max_length=50)),
                 ('contents', models.TextField()),
                 ('link', models.CharField(max_length=100)),
-                ('category', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='articles', to='article.category')),
+                ('category', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='articles', to='article_app.category')),
             ],
             options={
                 'db_table': 'article',
@@ -63,7 +63,7 @@ class Migration(migrations.Migration):
                 ('user_email', models.EmailField(max_length=254)),
                 ('reservation_date', models.DateField()),
                 ('status', models.CharField(choices=[('created', 'Created'), ('pending', 'Pending'), ('sent', 'Sent'), ('failed', 'Failed')], default='created', max_length=100)),
-                ('article', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='mail_batches', to='article.article')),
+                ('article', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='mail_batches', to='article_app.article')),
             ],
             options={
                 'db_table': 'mail_batch',
@@ -78,7 +78,7 @@ class Migration(migrations.Migration):
                 ('user_email', models.EmailField(max_length=254)),
                 ('is_activated', models.BooleanField(default=True)),
                 ('sent_mail_count', models.BigIntegerField(default=0)),
-                ('category', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='user_categories', to='article.category')),
+                ('category', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='user_categories', to='article_app.category')),
             ],
             options={
                 'db_table': 'user_category',
