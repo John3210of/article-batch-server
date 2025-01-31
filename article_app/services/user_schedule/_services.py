@@ -1,5 +1,5 @@
 from article_app.models import UserSchedule
-from article_app.serializers import UserScheduleSerializer
+from article_app.serializers import UserScheduleSerializer,UserScheduleCreateSerializer
 from article_app.services.base._service import BaseService
 from article_app.services.utils.service_utils import create_response,exception_handler
 
@@ -32,7 +32,7 @@ class UserScheduleService(BaseService):
         """
         새로운 UserSchedule을 생성하거나 기존 데이터를 대체합니다.
         """
-        serializer = UserScheduleSerializer(data=data)
+        serializer = UserScheduleCreateSerializer(data=data)
         serializer.is_valid(raise_exception=True)
 
         validated_data = serializer.validated_data
