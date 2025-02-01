@@ -22,11 +22,16 @@ class UserCategoryService(BaseService):
         특정 사용자의 활성화된 UserCategory를 조회합니다.
         """
         active_categories = UserCategory.objects.get_active_user_category(user_id)
-        category_titles = [active_category.category.title for active_category in active_categories]
+        categories = [
+            {"id": active_category.category.id, "title": active_category.category.title}
+            for active_category in active_categories
+        ]
+
         response_data = {
             "userId": user_id,
-            "categoryTitles": category_titles
+            "categories": categories
         }
+
         return create_response(data=response_data)
 
     @staticmethod
