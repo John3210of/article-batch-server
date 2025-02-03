@@ -9,6 +9,7 @@ git clone https://github.com/nine-docs/article-batch-server.git
 ```
 
 .env 파일을 루트 디렉토리에 추가하고 아래 명령어를 이용해 테스트 합니다.
+.env 파일은 msa domains 문서에 존재합니다.
 ```
 ./dev.sh
 ```
