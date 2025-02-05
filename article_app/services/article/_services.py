@@ -52,3 +52,25 @@ class ArticleService(BaseService):
         article = Article.objects.get(pk=article_id)
         article.delete()
         return create_response(data={"message": "Article deleted successfully"}, status_code=204)
+    
+    @staticmethod
+    @exception_handler(method_name="get_articles_by_ids")
+    def get_articles_by_ids(article_ids):
+        '''
+        특정 article 조회 (북마크 전용)
+        '''
+        articles = Article.objects.filter(id__in=article_ids)
+        if not articles.exists():
+            return create_response(data={"message": "No articles found"}, status_code=404)
+        article_dict = {
+            str(article.id): {
+                "title": article.title,
+                "category": {
+                    "id": article.category.id if article.category else None,
+                    "name": article.category.title if article.category else None
+                }
+            }
+            for article in articles
+        }
+
+        return create_response(data=article_dict, status_code=200)
