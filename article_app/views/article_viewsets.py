@@ -2,7 +2,7 @@ from rest_framework import viewsets
 from drf_yasg.utils import swagger_auto_schema
 from article_app.services import ArticleService
 from drf_yasg import openapi
-
+from rest_framework.decorators import action
 class ArticleViewSet(viewsets.ViewSet):
     """
     Article 관련 ViewSet입니다.
@@ -68,3 +68,28 @@ class ArticleViewSet(viewsets.ViewSet):
     )
     def destroy(self, request, pk=None):
         return ArticleService.delete_article(pk)
+    
+    @swagger_auto_schema(
+    method='post',
+    request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            "article_ids": openapi.Schema(
+                type=openapi.TYPE_ARRAY,
+                items=openapi.Schema(type=openapi.TYPE_INTEGER),
+                description="조회할 Article ID 목록"
+            )
+        },
+        required=["article_ids"],
+    ),
+    responses={200: "Success", 400: "Bad Request"},
+    tags=["Article API"]
+    )
+    @action(detail=False, methods=["post"], url_path="retrieve-multiple")
+    def retrieve_multiple(self, request):
+        '''
+        특정 article을 조회하는 API입니다.
+        POST 요청에서 `article_ids` 리스트를 받아 해당 article을 반환합니다.
+        '''
+        article_ids = request.data.get("article_ids")
+        return ArticleService.get_articles_by_ids(article_ids)
