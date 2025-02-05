@@ -74,13 +74,13 @@ class ArticleViewSet(viewsets.ViewSet):
     request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
         properties={
-            "article_ids": openapi.Schema(
+            "articleIds": openapi.Schema(
                 type=openapi.TYPE_ARRAY,
                 items=openapi.Schema(type=openapi.TYPE_INTEGER),
                 description="조회할 Article ID 목록"
             )
         },
-        required=["article_ids"],
+        required=["articleIds"],
     ),
     responses={200: "Success", 400: "Bad Request"},
     tags=["Article API"]
