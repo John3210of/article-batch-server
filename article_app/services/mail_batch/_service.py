@@ -8,6 +8,7 @@ from article_app.serializers.mail_batch_serializers import MailBatchSerializer
 import requests
 from article_app.enums.mail_status import MailStatus
 from django.conf import settings
+from batch_app.services.discord import send_discord_embed
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -66,12 +67,17 @@ class MailBatchService:
                     user_email=chosen_category.user_email,
                     article=next_article,
                     reservation_date=next_day,
-                    status="CREATED",
+                    status=MailStatus.CREATED.value,
                 ))
 
                 chosen_category.last_mailed_article_id = next_article.pk
                 chosen_category.save()
             MailBatch.objects.bulk_create(mail_batches)
+        send_discord_embed(
+            title="📬 내일 보낼 메일 리스트 생성 완료",
+            description=f"내일 보낼 메일은 **{len(mail_batches)}건**입니다! 🎉",
+            color=0x3498db
+        )
                 
     @staticmethod
     def send_batches_for_next_day():
@@ -87,8 +93,18 @@ class MailBatchService:
             logging.error(f"Mail server error: {e}")
             raise RuntimeError(f"Mail server error: {e}")
 
-        today = (date.today() + timedelta(days=1)).isoformat()  # YYYY-MM-DD 포맷
-        mail_batches = MailBatch.objects.filter(reservation_date=today)
+        today = (date.today()).isoformat()
+        mail_batches = MailBatch.objects.filter(reservation_date=today).exclude(status=MailStatus.SENT.value)
+
+        total_batches = len(mail_batches)
+        success_count = 0
+        failure_count = 0
+
+        send_discord_embed(
+            title="🚀 메일 전송 시작",
+            description=f"총 **{total_batches}건**의 메일 전송을 시작합니다. 📤",
+            color=0x3498db
+        )
 
         for mail_batch in mail_batches:
             body = MailBatchService.get_mail_batch_details(mail_batch)
@@ -103,14 +119,23 @@ class MailBatchService:
                 api_response.raise_for_status()
                 mail_batch.status = MailStatus.SENT.value
                 mail_batch.save()
+                success_count += 1
                 logging.info(f"Mail sent for batch: {mail_batch.id}, Response: {api_response.json()}")
             except requests.exceptions.RequestException as e:
                 mail_batch.status = MailStatus.FAILED.value
                 mail_batch.save()
+                failure_count += 1
                 logging.error(f"Failed to send mail for batch {mail_batch.id}: {e}")
 
         logging.info("Mail batch sending finished.")
-        return "finished"
+        send_discord_embed(
+            title="📧 메일 전송 완료",
+            fields=[
+                {"name": "성공한 메일", "value": f"**{success_count}건** ✅", "inline": True},
+                {"name": "실패한 메일", "value": f"**{failure_count}건** ❌", "inline": True},
+            ],
+            color=0x2ecc71 if failure_count == 0 else 0xe74c3c
+        )
     
     @staticmethod
     def check_batches_for_next_day():
