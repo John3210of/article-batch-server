@@ -1,10 +1,10 @@
 from enum import Enum
 
 class MailStatus(Enum):
-    CREATED = 'created'
-    PENDING = 'pending'
-    SENT = 'sent'
-    FAILED = 'failed'
+    CREATED = 'CREATED'
+    PENDING = 'PENDING'
+    SENT = 'SENT'
+    FAILED = 'FAILED'
 
     @classmethod
     def choices(cls):

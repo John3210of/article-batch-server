@@ -66,7 +66,7 @@ class MailBatchService:
                     user_email=chosen_category.user_email,
                     article=next_article,
                     reservation_date=next_day,
-                    status="CREATED",
+                    status=MailStatus.CREATED.value,
                 ))
 
                 chosen_category.last_mailed_article_id = next_article.pk
@@ -87,8 +87,8 @@ class MailBatchService:
             logging.error(f"Mail server error: {e}")
             raise RuntimeError(f"Mail server error: {e}")
 
-        today = (date.today() + timedelta(days=1)).isoformat()  # YYYY-MM-DD 포맷
-        mail_batches = MailBatch.objects.filter(reservation_date=today)
+        today = (date.today()).isoformat()
+        mail_batches = MailBatch.objects.filter(reservation_date=today).exclude(status=MailStatus.SENT.value)
 
         for mail_batch in mail_batches:
             body = MailBatchService.get_mail_batch_details(mail_batch)
@@ -109,7 +109,7 @@ class MailBatchService:
                 mail_batch.save()
                 logging.error(f"Failed to send mail for batch {mail_batch.id}: {e}")
 
-        logging.info("Mail batch sending finished.")
+        logging.info(f"{len(mail_batches)} Mail batch sending finished.")
         return "finished"
     
     @staticmethod
@@ -119,7 +119,7 @@ class MailBatchService:
         """
         mails = []
         today = (date.today() + timedelta(days=1)).isoformat()
-        mail_batches = MailBatch.objects.filter(reservation_date=today)
+        mail_batches = MailBatch.objects.filter(reservation_date=today,status='CREATED')
         
         try:
             response = requests.get(f"{settings.MAIL_SERVER_URL}/api/v1/mail/health")
