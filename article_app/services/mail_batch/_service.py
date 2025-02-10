@@ -95,7 +95,6 @@ class MailBatchService:
 
         today = (date.today()).isoformat()
         mail_batches = MailBatch.objects.filter(reservation_date=today).exclude(status=MailStatus.SENT.value)
-
         total_batches = len(mail_batches)
         success_count = 0
         failure_count = 0
@@ -105,6 +104,7 @@ class MailBatchService:
             description=f"총 **{total_batches}건**의 메일 전송을 시작합니다. 📤",
             color=0x3498db
         )
+
 
         for mail_batch in mail_batches:
             body = MailBatchService.get_mail_batch_details(mail_batch)
@@ -126,7 +126,6 @@ class MailBatchService:
                 mail_batch.save()
                 failure_count += 1
                 logging.error(f"Failed to send mail for batch {mail_batch.id}: {e}")
-
         logging.info("Mail batch sending finished.")
         send_discord_embed(
             title="📧 메일 전송 완료",
@@ -136,6 +135,7 @@ class MailBatchService:
             ],
             color=0x2ecc71 if failure_count == 0 else 0xe74c3c
         )
+        logging.info(f"{len(mail_batches)} Mail batch sending finished.")
     
     @staticmethod
     def check_batches_for_next_day():
@@ -144,7 +144,7 @@ class MailBatchService:
         """
         mails = []
         today = (date.today() + timedelta(days=1)).isoformat()
-        mail_batches = MailBatch.objects.filter(reservation_date=today)
+        mail_batches = MailBatch.objects.filter(reservation_date=today,status='CREATED')
         
         try:
             response = requests.get(f"{settings.MAIL_SERVER_URL}/api/v1/mail/health")
