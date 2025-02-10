@@ -29,6 +29,8 @@ SECRET_KEY = env('SECRET_KEY')
 DEBUG = env('DEBUG')
 ALLOWED_HOSTS = ['*']
 MAIL_SERVER_URL = env("MAIL_SERVER_URL")
+DISCORD_WEBHOOK_URL = env("DISCORD_WEBHOOK_URL")
+
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
