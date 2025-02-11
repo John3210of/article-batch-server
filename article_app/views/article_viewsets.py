@@ -7,15 +7,7 @@ class ArticleViewSet(viewsets.ViewSet):
     """
     Article 관련 ViewSet입니다.
     """
-    
-    @swagger_auto_schema(
-        tags=["Article API"]
-    )
-    def retrieve(self, request, pk=None):
-        '''
-        article을 조회하는 API입니다.          
-        '''
-        return ArticleService.get_article_by_id(pk)
+
 
     @swagger_auto_schema(tags=["Article API"])
     def list(self, request):
@@ -93,3 +85,24 @@ class ArticleViewSet(viewsets.ViewSet):
         '''
         article_ids = request.data.get("article_ids")
         return ArticleService.get_articles_by_ids(article_ids)
+    
+    @swagger_auto_schema(
+        operation_description="특정 article을 조회하는 API입니다.",
+        responses={200: "Success", 404: "Not Found"},
+        tags=["Article API"],
+        manual_parameters=[
+            openapi.Parameter(
+                name="id",
+                in_=openapi.IN_PATH,
+                type=openapi.TYPE_INTEGER,
+                description="조회할 Article ID",
+                required=True,
+            )
+        ]
+    )
+    def retrieve(self, request, pk=None):
+        '''
+        특정 article을 조회하는 API입니다.
+        GET 요청에서 `/article/{id}/` 형식으로 ID를 받아 해당 article을 반환합니다.
+        '''
+        return ArticleService.get_articles_by_id_v2(pk)
