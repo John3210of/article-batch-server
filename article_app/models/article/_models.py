@@ -2,7 +2,7 @@ from django.db import models
 from article_app.models.base_model import AbstractBaseModel
 from ._manager import ArticleManager
 class Article(AbstractBaseModel):
-    title = models.CharField(max_length=50)
+    title = models.CharField(max_length=300)
     contents = models.TextField()
     link = models.CharField(max_length=100)
     category = models.ForeignKey('article_app.Category', on_delete=models.CASCADE, related_name='articles')
