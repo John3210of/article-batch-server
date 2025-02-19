@@ -78,7 +78,7 @@ class MailBatchService:
             description=f"내일 보낼 메일은 **{len(mail_batches)}건**입니다! 🎉",
             color=0x3498db
         )
-                
+
     @staticmethod
     def send_batches_for_next_day():
         """
@@ -168,7 +168,7 @@ class MailBatchService:
         return {
             "addressList": [mail_batch.user_email],
             "question": mail_batch.article.title,
-            "articleLink": f' server domain + {mail_batch.article.id}'
+            "articleLink": f'{settings.NINEDOCS_SERVER_URL}/{mail_batch.article.id}'
         }
         
     @staticmethod
