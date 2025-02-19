@@ -9,6 +9,7 @@ class ArticleService(BaseService):
     def get_article_by_id(article_id):
         """
         단일 Article 조회
+        #NOTE 지금은 사용하지 않습니다.
         """
         return BaseService.get_object_by_id(Article, ArticleSerializer, article_id)
 
@@ -73,4 +74,22 @@ class ArticleService(BaseService):
             for article in articles
         }
 
+        return create_response(data=article_dict, status_code=200)
+    
+    @staticmethod
+    @exception_handler(method_name="get_articles_by_id_v2")
+    def get_articles_by_id_v2(article_id):
+        '''
+        특정 article 조회
+        '''
+        article = Article.objects.get(id=article_id)
+        article_dict = {
+                "id": article_id,
+                "title": article.title,
+                "content": article.contents,
+                "category": {
+                    "id": article.category.id if article.category else None,
+                    "name": article.category.title if article.category else None
+            }
+        }
         return create_response(data=article_dict, status_code=200)
